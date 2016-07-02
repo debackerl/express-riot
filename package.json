@@ -1,0 +1,12 @@
+{
+	"name": "express-riot",
+	"title": "express extension to easy integration with riot.js",
+	"version": "1.0.0",
+	"author": "Laurent Debacker <debackerl gmail com>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/debackerl/express-riot.git"
+	},
+	"dependencies": {}
+}
