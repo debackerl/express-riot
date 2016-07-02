@@ -101,7 +101,7 @@ express.response.tag = function(tagName, actions) {
       window.state = ${JSON.stringify(state)};
       window.tagName = ${JSON.stringify(tagName)};
     </script>
-    ${''.concat(...scripts.map(scriptPath => `<script src="${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
+    ${String.prototype.concat.apply('', scripts.map(scriptPath => `<script src="${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
   </body>
 </html>`;
 
