@@ -6,6 +6,10 @@ var path = require('path');
 var express = require('express');
 var riot = require('riot');
 var redux = require('redux');
+var chokidar = require('chokidar');
+var EventEmitter = require('events');
+var Module = require('module');
+var vm = require('vm');
 
 let tagsByName = {};
 let hashByFile = {};
@@ -30,6 +34,37 @@ function getFileHash(path) {
       if(err) reject(err);
       else resolve(hashByFile[path] = checksum(data).substr(0, 32));
     });
+  });
+}
+
+function loadTagFile(filename, callback) {
+  fs.readFile(filename, 'utf8', (err, src) => {
+    var tagName;
+
+    if(!err) {
+        try {
+        var js = riot.compile(src, options.riot)
+
+        var mod = new Module(filename);
+        
+        var context = {
+          module: mod,
+          __filename: filename,
+          __dirname: path.dirname(filename),
+          console: console,
+          require: function (path) {
+            //return mod.require(path);
+            return require(path);
+          }
+        };
+        
+        tagName = vm.runInNewContext(`var riot = require('riot'); ${js}`, context);
+      } catch(ex) {
+        err = ex;
+      }
+    }
+
+    if(callback) callback(err, tagName);
   });
 }
 
@@ -76,10 +111,8 @@ express.response.tag = function(tagName, actions) {
   // wait for completion of all actions before continuing
   Promise
   .all(promises)
-  .catch(reason => {
-      this.status(500);
-      this.send(`Error while dispatching actions: ${reason}`);
-  }).then(() => {
+  .then(() => {
+    try {
       const state = store.getState();
 
       let tag = tagsByName[tagName];
@@ -109,13 +142,30 @@ express.response.tag = function(tagName, actions) {
 
       this.status(200);
       this.send(rendered);
-    })
-    .catch(reason => {
+    } catch(reason) {
       console.log(`${reason.stack}`);
 
       this.status(500);
       this.send(`Error while rendering: ${reason}`);
+    }
+  })
+  .catch(reason => {
+    this.status(500);
+    this.send(`Error while dispatching actions: ${reason}`);
+  });
+};
+
+exports.hotLoad = function(pathOrGlob) {
+  var emitter = new EventEmitter();
+  
+  chokidar.watch(pathOrGlob).on('all', (event, path) => {
+    if(event == 'add' || event == 'change') loadTagFile(path, (err, tagName) => {
+      if(err) emitter.emit('error', err, path);
+      else emitter.emit('loaded', tagName, path);
     });
+  });
+
+  return emitter;
 };
 
 exports.options = options;

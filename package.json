@@ -1,14 +1,27 @@
 {
-	"name": "express-riot",
-	"title": "express extension to easy integration with riot.js",
-	"version": "1.0.1",
-	"author": "Laurent Debacker <debackerl gmail com>",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/debackerl/express-riot.git"
-	},
-	"dependencies": {
-		
-	}
+  "name": "express-riot",
+  "title": "express extension to easy integration with riot.js",
+  "version": "1.0.1",
+  "author": {
+    "name": "Laurent Debacker",
+    "email": "debackerl gmail com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/debackerl/express-riot.git"
+  },
+  "dependencies": {
+    "chokidar": "^1.6.0"
+  },
+  "gitHead": "49814fb7ddb196be54991e003b86fbf253760b31",
+  "bugs": {
+    "url": "https://github.com/debackerl/express-riot/issues"
+  },
+  "readme": "ERROR: No README data found!",
+  "homepage": "https://github.com/debackerl/express-riot#readme",
+  "_id": "express-riot@1.0.1",
+  "scripts": {},
+  "_shasum": "250403da177afd7a981829c2d7fbf55c8fd53899",
+  "_from": "express-riot@>=1.0.0 <2.0.0"
 }
