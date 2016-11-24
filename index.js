@@ -85,6 +85,7 @@ express.response.tag = function(tagName, actions) {
   // create the store
   const store = redux.createStore(this.app.get('reducer'), this.app.get('redux enhancer'));
   const root = path.resolve(this.app.get('static directory'));
+  const prefix = this.app.get('prefix') || '';
 
   let actionsPromise = Promise.resolve();
 
@@ -134,7 +135,7 @@ express.response.tag = function(tagName, actions) {
       window.state = ${JSON.stringify(state)};
       window.tagName = ${JSON.stringify(tagName)};
     </script>
-    ${String.prototype.concat.apply('', scripts.map(scriptPath => `<script src="${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
+    ${String.prototype.concat.apply('', scripts.map(scriptPath => `<script src="${prefix}/${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
   </body>
 </html>`;
 
