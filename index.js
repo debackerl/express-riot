@@ -85,7 +85,9 @@ express.response.tag = function(tagName, actions) {
   // create the store
   const store = redux.createStore(this.app.get('reducer'), this.app.get('redux enhancer'));
   const root = path.resolve(this.app.get('static directory'));
-  const prefix = this.app.get('prefix') || '';
+
+  let prefix = this.app.get('prefix') || '';
+  if(prefix.endsWith('/')) prefix = prefix.substr(0, prefix.length - 1);
 
   let actionsPromise = Promise.resolve();
 
@@ -108,6 +110,8 @@ express.response.tag = function(tagName, actions) {
       .then(res => hashes[scriptPath] = res);
     promises.push(promise);
   }
+
+  const prefixedScripts = scripts.map(scriptPath => scriptPath.startsWith('/') ? prefix + scriptPath : scriptPath);
 
   // wait for completion of all actions before continuing
   Promise
@@ -135,7 +139,7 @@ express.response.tag = function(tagName, actions) {
       window.state = ${JSON.stringify(state)};
       window.tagName = ${JSON.stringify(tagName)};
     </script>
-    ${String.prototype.concat.apply('', scripts.map(scriptPath => `<script src="${prefix}/${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
+    ${String.prototype.concat.apply('', prefixedScripts.map(scriptPath => `<script src="${prefix}${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
   </body>
 </html>`;
 
