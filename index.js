@@ -100,18 +100,21 @@ express.response.tag = function(tagName, actions) {
       actionsPromise = actionsPromise.then(() => store.dispatch(action));
   }
 
+  const stylesheets = this.app.get('stylesheets');
   const scripts = this.app.get('scripts');
   let hashes = {};
   let promises = [actionsPromise];
 
-  // get hash of all scripts to be included
-  for(let scriptPath of scripts) {
-    let promise = getFileHash(path.join(root, scriptPath))
-      .then(res => hashes[scriptPath] = res);
+  // get hash of all stylesheets and scripts to be included
+  for(let filePath of stylesheets.concat(scripts)) {
+    let promise = getFileHash(path.join(root, filePath))
+      .then(res => hashes[filePath] = res);
     promises.push(promise);
   }
 
-  const prefixedScripts = scripts.map(scriptPath => scriptPath.startsWith('/') ? prefix + scriptPath : scriptPath);
+  function prefixPath(filePath) {
+    return filePath.startsWith('/') ? prefix + filePath : filePath;
+  }
 
   // wait for completion of all actions before continuing
   Promise
@@ -132,6 +135,7 @@ express.response.tag = function(tagName, actions) {
     <meta charset="utf-8">
     <title>${escape(state.title)}</title>
     ${this.app.get('html header')}
+    ${String.prototype.concat.apply('', stylesheets.map(stylesheetPath => `<link rel="stylesheet" href="${prefixPath(stylesheetPath)}?h=${hashes[stylesheetPath]}">`))}
   </head>
   <body>
     ${html}
@@ -139,7 +143,7 @@ express.response.tag = function(tagName, actions) {
       window.state = ${JSON.stringify(state)};
       window.tagName = ${JSON.stringify(tagName)};
     </script>
-    ${String.prototype.concat.apply('', prefixedScripts.map(scriptPath => `<script src="${prefix}${scriptPath}?h=${hashes[scriptPath]}"></script>`))}
+    ${String.prototype.concat.apply('', scripts.map(scriptPath => `<script src="${prefixPath(scriptPath)}?h=${hashes[scriptPath]}"></script>`))}
   </body>
 </html>`;
 
