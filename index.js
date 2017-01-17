@@ -81,10 +81,12 @@ require.extensions['.tag'] = function(module, filename) {
 };
 
 // add a new 'tag' method to 'response' objects of the express framework
-express.response.tag = function(tagName, actions) {
+express.response.tag = function(tagName, actions, options) {
   // create the store
   const store = redux.createStore(this.app.get('reducer'), this.app.get('redux enhancer'));
   const root = path.resolve(this.app.get('static directory'));
+
+  options = options || {};
 
   let prefix = this.app.get('prefix') || '';
   if(prefix.endsWith('/')) prefix = prefix.substr(0, prefix.length - 1);
@@ -129,12 +131,17 @@ express.response.tag = function(tagName, actions) {
       // the store should already be ready because render() won't wait for asynchronous operations
       let html = riot.render(tagName, {isclient: false, store: store});
 
+      let header = '';
+      if(options.header)
+        header = typeof(options.header) === 'function' ? options.header(state) : options.header;
+
       let rendered = `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <title>${escape(state.title)}</title>
     ${this.app.get('html header')}
+    ${header}
     ${String.prototype.concat.apply('', stylesheets.map(stylesheetPath => `<link rel="stylesheet" href="${prefixPath(stylesheetPath)}?h=${hashes[stylesheetPath]}">`))}
   </head>
   <body>
