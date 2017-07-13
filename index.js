@@ -135,6 +135,10 @@ express.response.tag = function(tagName, actions, options) {
       if(options.header)
         header = typeof(options.header) === 'function' ? options.header(state) : options.header;
 
+      let httpCode = 200;
+      if(options.httpCode)
+        httpCode = typeof(options.httpCode) === 'function' ? options.httpCode(state) : options.httpCode;
+
       let rendered = `<!DOCTYPE html>
 <html>
   <head>
@@ -156,7 +160,7 @@ express.response.tag = function(tagName, actions, options) {
 
       // window.tag = (function(riot) { return ${tag.src} })(require('riot'));
 
-      this.status(200);
+      this.status(httpCode);
       this.send(rendered);
     } catch(reason) {
       console.log(`${reason.stack}`);
