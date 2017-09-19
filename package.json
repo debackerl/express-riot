@@ -1,7 +1,7 @@
 {
   "name": "express-riot",
   "title": "express extension to easy integration with riot.js",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "author": {
     "name": "Laurent Debacker",
     "email": "debackerl gmail com"

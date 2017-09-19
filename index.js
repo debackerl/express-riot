@@ -102,8 +102,8 @@ express.response.tag = function(tagName, actions, options) {
       actionsPromise = actionsPromise.then(() => store.dispatch(action));
   }
 
-  const stylesheets = this.app.get('stylesheets');
-  const scripts = this.app.get('scripts');
+  const stylesheets = this.locals.stylesheets || this.app.get('stylesheets');
+  const scripts = this.locals.scripts || this.app.get('scripts');
   let hashes = {};
   let promises = [actionsPromise];
 
@@ -144,7 +144,7 @@ express.response.tag = function(tagName, actions, options) {
   <head>
     <meta charset="utf-8">
     <title>${escape(state.title)}</title>
-    ${this.app.get('html header')}
+    ${this.locals.htmlHeader || this.app.get('html header')}
     ${header}
     ${String.prototype.concat.apply('', stylesheets.map(stylesheetPath => `<link rel="stylesheet" href="${prefixPath(stylesheetPath)}?h=${hashes[stylesheetPath]}">`))}
   </head>
