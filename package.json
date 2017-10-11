@@ -12,7 +12,8 @@
     "url": "git+https://github.com/debackerl/express-riot.git"
   },
   "dependencies": {
-    "chokidar": "^1.6.0"
+    "chokidar": "^1.6.0",
+    "xml-escape": "^1.1.0"
   },
   "gitHead": "49814fb7ddb196be54991e003b86fbf253760b31",
   "bugs": {

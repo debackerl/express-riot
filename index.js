@@ -10,6 +10,7 @@ var chokidar = require('chokidar');
 var EventEmitter = require('events');
 var Module = require('module');
 var vm = require('vm');
+var xmlescape = require('xml-escape');
 
 let tagsByName = {};
 let hashByFile = {};
@@ -143,7 +144,7 @@ express.response.tag = function(tagName, actions, options) {
 <html>
   <head>
     <meta charset="utf-8">
-    <title>${escape(state.title)}</title>
+    <title>${xmlescape(state.title)}</title>
     ${this.locals.htmlHeader || this.app.get('html header')}
     ${header}
     ${String.prototype.concat.apply('', stylesheets.map(stylesheetPath => `<link rel="stylesheet" href="${prefixPath(stylesheetPath)}?h=${hashes[stylesheetPath]}">`))}
